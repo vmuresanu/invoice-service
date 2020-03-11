@@ -1,12 +1,11 @@
 import { Body, Controller, Get, Param, Post, Put, UseGuards, UsePipes } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
-import { InvoiceResponse } from './entity/invoice.response';
 import { ValidationPipe } from '../../infrastucture/validation.pipe';
 import { InvoiceRequest } from './entity/invoice.request';
-import { LoggedInGuard } from '../../infrastucture/logged-in.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('invoices')
-@UseGuards(LoggedInGuard)
+@UseGuards(AuthGuard('jwt'))
 export class InvoiceController {
 
   constructor(private invoiceService: InvoiceService) {
@@ -25,10 +24,7 @@ export class InvoiceController {
   @Post()
   @UsePipes(new ValidationPipe())
   async createInvoice(@Body() invoiceRequest: InvoiceRequest) {
-    const x = await this.invoiceService.create(invoiceRequest);
-    console.log(invoiceRequest)
-    console.log(x)
-    return x;
+    return await this.invoiceService.create(invoiceRequest);
   }
 
   @Put(':id')
