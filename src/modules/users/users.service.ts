@@ -16,7 +16,11 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
-  async login(userDto: UserDTO): Promise<{token: string}> {
+  async getUserByUsername(username: string): Promise<User> {
+    return await this.userRepository.findOne({ where: { username } });
+  }
+
+  async login(userDto: UserDTO): Promise<{ token: string }> {
     const { username, password } = userDto;
     const user = await this.userRepository.findOne({ where: { username } });
     if (!user || !(await comparePassword(password, user.password))) {
@@ -26,7 +30,7 @@ export class UsersService {
       );
     } else {
       const token = getToken(user.id, user.username);
-      return {token};
+      return { token };
     }
   }
 

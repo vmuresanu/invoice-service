@@ -9,8 +9,7 @@ import { HttpErrorFilter } from './infrastucture/http-error.filter';
 import { LoggingInterceptor } from './infrastucture/logging.interceptor';
 import { UsersModule } from './modules/users/users.module';
 import { User } from './modules/users/entity/user';
-import { ContextService } from './infrastucture/context.service';
-import { InfrastructureModule } from './infrastucture/infrastructure.module';
+import { AuthModule } from './infrastucture/auth/auth.module';
 
 @Module({
   imports: [
@@ -26,13 +25,12 @@ import { InfrastructureModule } from './infrastucture/infrastructure.module';
       entities: [Invoice, User],
     }),
     InvoiceModule,
-    InfrastructureModule,
+    AuthModule,
     UsersModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
-    ContextService,
     {
       provide: APP_FILTER,
       useClass: HttpErrorFilter,
