@@ -7,26 +7,19 @@ import { Invoice } from './modules/invoice/entity/invoice.entity';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { HttpErrorFilter } from './infrastucture/http-error.filter';
 import { LoggingInterceptor } from './infrastucture/logging.interceptor';
-import { UsersModule } from './modules/users/users.module';
-import { User } from './modules/users/entity/user';
+import { UserModule } from './modules/user/user.module';
+import { User } from './modules/user/entity/user.entity';
 import { AuthModule } from './infrastucture/auth/auth.module';
+import { InvoiceStatus } from './modules/invoice-status/entity/invoice-status.entity';
+import { getMetadataArgsStorage } from 'typeorm';
+import { typeOrmConfig } from './config/typeorm.config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'bookstore',
-      synchronize: true,
-      logging: true,
-      entities: [Invoice, User],
-    }),
+    TypeOrmModule.forRoot(typeOrmConfig),
     InvoiceModule,
     AuthModule,
-    UsersModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [
@@ -39,7 +32,7 @@ import { AuthModule } from './infrastucture/auth/auth.module';
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
     },
-  ],
+  ]
 })
 export class AppModule {
 }

@@ -1,7 +1,8 @@
-import { Column, CreateDateColumn, Entity, Generated, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, Generated, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { InvoiceStatus } from '../../invoice-status/entity/invoice-status.entity';
 
 @Entity('invoice')
-export class Invoice {
+export class Invoice extends BaseEntity {
 
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -21,4 +22,7 @@ export class Invoice {
 
   @Column('decimal', { precision: 5, scale: 2 })
   price: number;
+
+  @ManyToOne(type => InvoiceStatus)
+  status: InvoiceStatus;
 }
