@@ -1,7 +1,9 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
+import { InvoiceStatus } from '../../invoice-status/entity/invoice-status.entity';
+import { InvoiceStatusResponse } from '../../invoice-status/entity/invoice-status.response';
 
 export class InvoiceResponse {
-  @Expose({name: 'uuid'})
+  @Expose({ name: 'uuid' })
   id: string;
 
   title: string;
@@ -9,6 +11,9 @@ export class InvoiceResponse {
   description: string;
 
   price: number;
+
+  @Type(() => InvoiceStatusResponse)
+  status: InvoiceStatusResponse;
 
   @Exclude()
   created: string;

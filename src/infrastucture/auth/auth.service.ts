@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { UsersService } from '../../modules/users/users.service';
+import { UserService } from '../../modules/user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { UserDTO } from '../../modules/users/entity/user.dto';
+import { UserDTO } from '../../modules/user/entity/user.dto';
 import { comparePassword } from '../../helpers/helpers';
 
 @Injectable()
 export class AuthService {
 
   constructor(
-    private readonly usersService: UsersService,
+    private readonly usersService: UserService,
     private readonly jwtService: JwtService,
   ) {
   }

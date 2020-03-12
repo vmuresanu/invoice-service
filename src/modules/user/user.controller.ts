@@ -1,12 +1,12 @@
 import { Body, Controller, Get, Post, UsePipes } from '@nestjs/common';
 import { InvoiceService } from '../invoice/invoice.service';
-import { UsersService } from './users.service';
+import { UserService } from './user.service';
 import { UserDTO } from './entity/user.dto';
 import { ValidationPipe } from '../../infrastucture/validation.pipe';
 
-@Controller('users')
-export class UsersController {
-  constructor(private usersService: UsersService) {
+@Controller('user')
+export class UserController {
+  constructor(private usersService: UserService) {
   }
 
   @Get()

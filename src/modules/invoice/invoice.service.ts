@@ -1,21 +1,27 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { ConnectionManager, Repository } from 'typeorm';
 import { Invoice } from './entity/invoice.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InvoiceResponse } from './entity/invoice.response';
 import { InvoiceRequest } from './entity/invoice.request';
 import { plainToClass } from 'class-transformer';
+import { CodeEnum } from '../../shared/model/code.enum';
+import { InvoiceStatus } from '../invoice-status/entity/invoice-status.entity';
 
 @Injectable()
 export class InvoiceService {
   constructor(
     @InjectRepository(Invoice)
-    private readonly invoiceRepository: Repository<Invoice>) {
+    private readonly invoiceRepository: Repository<Invoice>,
+    @InjectRepository(InvoiceStatus)
+    private readonly invoiceStatusRepository: Repository<InvoiceStatus>) {
   }
 
   async create(invoiceRequest: InvoiceRequest): Promise<InvoiceResponse> {
     let result;
+    const st = await this.invoiceStatusRepository.findOne({where: {code: CodeEnum.NEW}});
     const invoice = this.invoiceRepository.create(invoiceRequest);
+    invoice.status = st;
     await this.invoiceRepository.save(invoice);
     result = plainToClass(InvoiceResponse, invoice);
     return result;
