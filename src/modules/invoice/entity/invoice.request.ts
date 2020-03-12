@@ -1,4 +1,4 @@
-import { IsDecimal, IsNumber, IsString } from 'class-validator';
+import { IsISO8601, IsNumber, IsString } from 'class-validator';
 
 export class InvoiceRequest {
 
@@ -10,4 +10,10 @@ export class InvoiceRequest {
 
   @IsNumber()
   price: number;
+
+  @IsISO8601 ()
+  startDate: string;
+
+  @IsISO8601()
+  endDate: string;
 }

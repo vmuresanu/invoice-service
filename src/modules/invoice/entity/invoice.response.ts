@@ -12,6 +12,10 @@ export class InvoiceResponse {
 
   price: number;
 
+  startDate: Date;
+
+  endDate: Date;
+
   @Type(() => InvoiceStatusResponse)
   status: InvoiceStatusResponse;
 
