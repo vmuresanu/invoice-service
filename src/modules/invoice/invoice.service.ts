@@ -39,12 +39,12 @@ export class InvoiceService {
     return book;
   }
 
-  async update(id: string, bookDto: Partial<InvoiceResponse>): Promise<any> {
-    const book = this.invoiceRepository.findOne({where: {id}});
-    if (!book) {
+  async update(id: string, invoiceRequest: Partial<InvoiceRequest>): Promise<any> {
+    const invoice = this.invoiceRepository.findOne({where: {id}});
+    if (!invoice) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
-    return await this.invoiceRepository.save({ ...book, ...bookDto });
+    return await this.invoiceRepository.save({ ...invoice, ...invoiceRequest });
   }
 
   async delete(id: string): Promise<Invoice> {

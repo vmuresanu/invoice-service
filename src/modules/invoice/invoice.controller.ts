@@ -29,7 +29,7 @@ export class InvoiceController {
 
   @Put(':id')
   @UsePipes(new ValidationPipe())
-  async updateBook(@Param('id') id: string, @Body() bookDTO: Partial<InvoiceRequest>) {
-    return this.invoiceService.update(id, bookDTO);
+  async updateInvoice(@Param('id') id: string, @Body() invoiceRequest: Partial<InvoiceRequest>) {
+    return this.invoiceService.update(id, invoiceRequest);
   }
 }
