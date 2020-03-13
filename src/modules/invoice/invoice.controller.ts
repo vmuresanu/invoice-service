@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, Post, Put, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, UseGuards, UsePipes } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
 import { ValidationPipe } from '../../infrastucture/validation.pipe';
 import { InvoiceRequest } from './entity/invoice.request';
 import { AuthGuard } from '@nestjs/passport';
 import { InvoiceResponse } from './entity/invoice.response';
+import { Paginator } from '../../infrastucture/pagination/paginator.interface';
 
 @Controller('invoices')
 @UseGuards(AuthGuard('jwt'))
@@ -13,8 +14,11 @@ export class InvoiceController {
   }
 
   @Get()
-  async getInvoices(): Promise<InvoiceResponse[]> {
-    return this.invoiceService.getInvoices();
+  async getInvoices(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 50,
+  ): Promise<Paginator<InvoiceResponse[]>> {
+    return this.invoiceService.getInvoices({ page, limit });
   }
 
   @Get(':id')
