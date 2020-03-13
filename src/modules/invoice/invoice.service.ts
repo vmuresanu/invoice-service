@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { ConnectionManager, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Invoice } from './entity/invoice.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InvoiceResponse } from './entity/invoice.response';
@@ -7,6 +7,9 @@ import { InvoiceRequest } from './entity/invoice.request';
 import { plainToClass } from 'class-transformer';
 import { CodeEnum } from '../../shared/model/code.enum';
 import { InvoiceStatus } from '../invoice-status/entity/invoice-status.entity';
+import { Paginator } from '../../infrastucture/pagination/paginator.interface';
+import { constructPagination } from '../../infrastucture/pagination/pagination-function';
+import { PaginationOptions } from '../../infrastucture/pagination/pagination-options.interface';
 
 @Injectable()
 export class InvoiceService {
@@ -17,11 +20,17 @@ export class InvoiceService {
     private readonly invoiceStatusRepository: Repository<InvoiceStatus>) {
   }
 
-  async getInvoices(): Promise<InvoiceResponse[]> {
-    let result;
-    const invoices = await this.invoiceRepository.find({ relations: ['status'] });
-    result = plainToClass(InvoiceResponse, invoices);
-    return result;
+  async getInvoices(options: PaginationOptions): Promise<Paginator<InvoiceResponse[]>> {
+    return this.invoiceRepository
+      .findAndCount({
+        take: options.limit,
+        skip: options.limit * (options.page - 1),
+        relations: ['status'],
+      })
+      .then(([invoices, totalItems]) => {
+        options.total = totalItems;
+        return constructPagination<InvoiceResponse>(plainToClass(InvoiceResponse, invoices), options);
+      });
   }
 
   async getInvoice(id: string): Promise<any> {
