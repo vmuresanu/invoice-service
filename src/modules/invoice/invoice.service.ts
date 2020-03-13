@@ -17,9 +17,26 @@ export class InvoiceService {
     private readonly invoiceStatusRepository: Repository<InvoiceStatus>) {
   }
 
+  async getInvoices(): Promise<InvoiceResponse[]> {
+    let result;
+    const invoices = await this.invoiceRepository.find({ relations: ['status'] });
+    result = plainToClass(InvoiceResponse, invoices);
+    return result;
+  }
+
+  async getInvoice(id: string): Promise<any> {
+    let result;
+    const invoice = await this.invoiceRepository.findOne({ where: { uuid: id }, relations: ['status'] });
+    if (!invoice) {
+      throw new HttpException('Invoice with given id Not found', HttpStatus.NOT_FOUND);
+    }
+    result = plainToClass(InvoiceResponse, invoice);
+    return result;
+  }
+
   async create(invoiceRequest: InvoiceRequest): Promise<InvoiceResponse> {
     let result;
-    const st = await this.invoiceStatusRepository.findOne({where: {code: CodeEnum.NEW}});
+    const st = await this.invoiceStatusRepository.findOne({ where: { code: CodeEnum.NEW } });
     const invoice = this.invoiceRepository.create(invoiceRequest);
     invoice.status = st;
     await this.invoiceRepository.save(invoice);
@@ -27,20 +44,8 @@ export class InvoiceService {
     return result;
   }
 
-  async getAll(): Promise<Invoice[]> {
-    return this.invoiceRepository.find();
-  }
-
-  async getById(id: string): Promise<Invoice> {
-    const book = this.invoiceRepository.findOne({where: {id}});
-    if (!book) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-    }
-    return book;
-  }
-
   async update(id: string, invoiceRequest: Partial<InvoiceRequest>): Promise<any> {
-    const invoice = this.invoiceRepository.findOne({where: {id}});
+    const invoice = this.invoiceRepository.findOne({ where: { id } });
     if (!invoice) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
@@ -48,11 +53,11 @@ export class InvoiceService {
   }
 
   async delete(id: string): Promise<Invoice> {
-    const book = this.invoiceRepository.findOne({where: {id}});
+    const book = this.invoiceRepository.findOne({ where: { id } });
     if (!book) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
-    await this.invoiceRepository.delete({id});
+    await this.invoiceRepository.delete({ id });
     return book;
   }
 }
