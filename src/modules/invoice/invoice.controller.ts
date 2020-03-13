@@ -3,6 +3,7 @@ import { InvoiceService } from './invoice.service';
 import { ValidationPipe } from '../../infrastucture/validation.pipe';
 import { InvoiceRequest } from './entity/invoice.request';
 import { AuthGuard } from '@nestjs/passport';
+import { InvoiceResponse } from './entity/invoice.response';
 
 @Controller('invoices')
 @UseGuards(AuthGuard('jwt'))
@@ -12,13 +13,13 @@ export class InvoiceController {
   }
 
   @Get()
-  async getBooks() {
-    return this.invoiceService.getAll();
+  async getInvoices(): Promise<InvoiceResponse[]> {
+    return this.invoiceService.getInvoices();
   }
 
   @Get(':id')
-  async getBook(@Param('id') id: string) {
-    return this.invoiceService.getById(id);
+  async getInvoice(@Param('id') id: string): Promise<InvoiceResponse> {
+    return this.invoiceService.getInvoice(id);
   }
 
   @Post()
