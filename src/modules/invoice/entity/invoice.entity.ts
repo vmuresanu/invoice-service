@@ -20,10 +20,10 @@ export class Invoice extends BaseEntity {
   @Column('text')
   description: string;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'date', nullable: true })
   startDate: Date;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'date', nullable: true })
   endDate: Date;
 
   @Column('decimal', { precision: 5, scale: 2 })

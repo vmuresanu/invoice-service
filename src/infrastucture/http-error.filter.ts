@@ -10,12 +10,16 @@ export class HttpErrorFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     if (exception instanceof HttpException) {
       const status = exception.getStatus() || HttpStatus.INTERNAL_SERVER_ERROR;
+      let badRequestMessage;
+      if (status === HttpStatus.BAD_REQUEST) {
+        badRequestMessage = exception.getResponse()
+      }
       errorResponse = {
         code: status,
         timestamp: new Date().toLocaleDateString(),
         path: request.url,
         method: request.method,
-        message: exception.message.error || exception.message || null,
+        message: badRequestMessage || exception.message || null,
       };
     } else {
       errorResponse = {

@@ -1,4 +1,5 @@
-import { IsISO8601, IsNumber, IsString } from 'class-validator';
+import { IsISO8601, IsNumber, IsString, Validate } from 'class-validator';
+import { IsBeforeConstraint } from '../../../shared/constraints/date-is-before.constraint';
 
 export class InvoiceRequest {
 
@@ -11,9 +12,10 @@ export class InvoiceRequest {
   @IsNumber()
   price: number;
 
-  @IsISO8601 ()
-  startDate: string;
+  @Validate(IsBeforeConstraint, ['endDate'])
+  @IsISO8601()
+  startDate: Date;
 
   @IsISO8601()
-  endDate: string;
+  endDate: Date;
 }
