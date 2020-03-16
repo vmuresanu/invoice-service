@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, DeleteResult } from 'typeorm';
 import { Invoice } from './entity/invoice.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InvoiceResponse } from './entity/invoice.response';
@@ -33,40 +33,49 @@ export class InvoiceService {
       });
   }
 
-  async getInvoice(id: string): Promise<any> {
-    let result;
-    const invoice = await this.invoiceRepository.findOne({ where: { uuid: id }, relations: ['status'] });
-    if (!invoice) {
-      throw new HttpException('Invoice with given id Not found', HttpStatus.NOT_FOUND);
-    }
-    result = plainToClass(InvoiceResponse, invoice);
-    return result;
+  async getInvoice(id: string): Promise<InvoiceResponse> {
+    return await this.invoiceRepository
+      .findOne({ where: { uuid: id }, relations: ['status'] })
+      .then((invoice: Invoice) => {
+        if (!invoice) {
+          throw new HttpException('Invoice with given id Not found', HttpStatus.NOT_FOUND);
+        }
+        return plainToClass(InvoiceResponse, invoice)
+      })
   }
 
   async create(invoiceRequest: InvoiceRequest): Promise<InvoiceResponse> {
-    let result;
     const st = await this.invoiceStatusRepository.findOne({ where: { code: CodeEnum.NEW } });
     const invoice = this.invoiceRepository.create(invoiceRequest);
     invoice.status = st;
-    await this.invoiceRepository.save(invoice);
-    result = plainToClass(InvoiceResponse, invoice);
-    return result;
+    return this.invoiceRepository
+      .save(invoice)
+      .then((invoice: Invoice) => {
+        return plainToClass(InvoiceResponse, invoice)
+      });
   }
 
-  async update(id: string, invoiceRequest: Partial<InvoiceRequest>): Promise<any> {
-    const invoice = this.invoiceRepository.findOne({ where: { id } });
+  async update(id: string, invoiceRequest: Partial<InvoiceRequest>): Promise<InvoiceResponse> {
+    const invoice = await this.invoiceRepository
+    .findOne({
+      where: { uuid: id },
+      relations: ['status'] 
+    });
     if (!invoice) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Invoice with such id doesn\'t exist', HttpStatus.NOT_FOUND);
     }
-    return await this.invoiceRepository.save({ ...invoice, ...invoiceRequest });
+    return this.invoiceRepository
+      .save({ ...invoice, ...invoiceRequest })
+      .then((invoice: Invoice) => {
+        return plainToClass(InvoiceResponse, invoice)
+      }) ;
   }
 
-  async delete(id: string): Promise<Invoice> {
-    const book = this.invoiceRepository.findOne({ where: { id } });
-    if (!book) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+  async delete(id: string): Promise<void> {
+    const invoice = await this.invoiceRepository.findOne({ where: { uuid: id } });
+    if (!invoice) {
+      throw new HttpException('Invoice with such id doesn\'t exist', HttpStatus.NOT_FOUND);
     }
-    await this.invoiceRepository.delete({ id });
-    return book;
+    this.invoiceRepository.delete({ uuid: id });
   }
 }
