@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Query, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, UseGuards, UsePipes, Delete } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
 import { ValidationPipe } from '../../infrastucture/validation.pipe';
 import { InvoiceRequest } from './entity/invoice.request';
@@ -36,5 +36,10 @@ export class InvoiceController {
   @UsePipes(new ValidationPipe())
   async updateInvoice(@Param('id') id: string, @Body() invoiceRequest: Partial<InvoiceRequest>) {
     return this.invoiceService.update(id, invoiceRequest);
+  }
+
+  @Delete(':id')
+  async deleteInvoice(@Param('id') id: string) {
+    return this.invoiceService.delete(id);
   }
 }
