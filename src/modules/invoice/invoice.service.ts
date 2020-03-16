@@ -10,12 +10,15 @@ import { InvoiceStatus } from '../invoice-status/entity/invoice-status.entity';
 import { Paginator } from '../../infrastucture/pagination/paginator.interface';
 import { constructPagination } from '../../infrastucture/pagination/pagination-function';
 import { PaginationOptions } from '../../infrastucture/pagination/pagination-options.interface';
+import { InvoiceRepository } from './invoice.repository';
+import { map, difference } from 'lodash';
+import { BulkDeleteResponse } from '../../shared/model/bulk-delete.response';
 
 @Injectable()
 export class InvoiceService {
   constructor(
     @InjectRepository(Invoice)
-    private readonly invoiceRepository: Repository<Invoice>,
+    private readonly invoiceRepository: InvoiceRepository,
     @InjectRepository(InvoiceStatus)
     private readonly invoiceStatusRepository: Repository<InvoiceStatus>) {
   }
@@ -78,4 +81,18 @@ export class InvoiceService {
     }
     this.invoiceRepository.delete({ uuid: id });
   }
+
+  async deleteInvoices(ids: string[]): Promise<BulkDeleteResponse> {
+    const invoices = await this.invoiceRepository.findByUUIDs(ids);
+    if (!invoices.length) {
+      throw new HttpException('Invoices with such ids doesn\'t exist', HttpStatus.NOT_FOUND);
+    }
+    const deletedIds: string[] = map(invoices, 'uuid');
+    const unprocessedIds = difference(ids, deletedIds);
+    deletedIds.forEach(id => {
+      this.invoiceRepository.delete({ uuid: id })
+    })
+    return { deletedIds, unprocessedIds }
+  }
+
 }
