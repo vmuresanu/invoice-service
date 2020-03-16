@@ -42,4 +42,9 @@ export class InvoiceController {
   async deleteInvoice(@Param('id') id: string) {
     return this.invoiceService.delete(id);
   }
+
+  @Delete()
+  async deleteInvoices(@Body() ids: string[]) {
+    return this.invoiceService.deleteInvoices(ids);
+  }
 }
