@@ -14,16 +14,3 @@ export function getToken(id, username) {
     { expiresIn: '10m', algorithm: 'RS512', issuer: username },
   );
 }
-
-export function verifyToken(token) {
-  return jwt.verify(
-    token,
-    process.env.SECRET,
-    (err, decoded) => {
-      if (err) {
-        console.log(err)
-      }
-      console.log(decoded)
-    }
-  );
-}
