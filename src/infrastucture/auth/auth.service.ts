@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../../modules/user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { UserDTO } from '../../modules/user/entity/user.dto';
+import { UserRequest } from '../../modules/user/entity/user.request';
 import { comparePassword } from '../../helpers/helpers';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: UserDTO) {
+  async login(user: UserRequest) {
     const payload = { username: user.username };
     return {
       access_token: this.jwtService.sign(payload, { algorithm: 'HS512' }),

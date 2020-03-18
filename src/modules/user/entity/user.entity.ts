@@ -1,19 +1,16 @@
-import { BaseEntity, BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 
 @Entity('user')
+@Unique(['username'])
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @CreateDateColumn({
-    select: false,
-  })
-  created: Date;
+  @CreateDateColumn()
+  createdDate: Date;
 
-  @Column({
-    type: 'text',
-  })
+  @Column('varchar', { length: 18 })
   username: string;
 
   @Column({

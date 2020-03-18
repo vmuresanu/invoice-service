@@ -2,8 +2,10 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
 import { Repository } from 'typeorm';
-import { UserDTO } from './entity/user.dto';
+import { UserRequest } from './entity/user.request';
 import { comparePassword, getToken } from '../../helpers/helpers';
+import { plainToClass } from 'class-transformer';
+import { UserResponse } from './entity/user.response';
 
 @Injectable()
 export class UserService {
@@ -20,7 +22,7 @@ export class UserService {
     return await this.userRepository.findOne({ where: { username } });
   }
 
-  async login(userDto: UserDTO): Promise<{ token: string }> {
+  async login(userDto: UserRequest): Promise<{ token: string }> {
     const { username, password } = userDto;
     const user = await this.userRepository.findOne({ where: { username } });
     if (!user || !(await comparePassword(password, user.password))) {
@@ -34,15 +36,16 @@ export class UserService {
     }
   }
 
-  async register(userDto: UserDTO): Promise<User> {
+  async register(userDto: UserRequest): Promise<UserResponse> {
     const { username } = userDto;
     let user = await this.userRepository.findOne({ where: { username } });
     if (user) {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
     user = this.userRepository.create(userDto);
-    await this.userRepository.save(user);
-    //TODO: Remove password
-    return user;
+    return await this.userRepository.save(user)
+      .then(user => {
+        return plainToClass(UserResponse, user);
+      });
   }
 }
