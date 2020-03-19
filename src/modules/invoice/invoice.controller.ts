@@ -10,7 +10,7 @@ import { Paginator } from '../../infrastucture/pagination/paginator.interface';
 @UseGuards(AuthGuard('jwt'))
 export class InvoiceController {
 
-  constructor(private invoiceService: InvoiceService) {
+  constructor(private readonly invoiceService: InvoiceService) {
   }
 
   @Get()
@@ -21,9 +21,14 @@ export class InvoiceController {
     return this.invoiceService.getInvoices({ page, limit });
   }
 
-  @Get(':id')
+  @Get('find/:id')
   async getInvoice(@Param('id') id: string): Promise<InvoiceResponse> {
     return this.invoiceService.getInvoice(id);
+  }
+
+  @Get('/orders')
+  async getData(@Param('invoiceId') invoiceId: string): Promise<InvoiceResponse> {
+    return this.invoiceService.getData(invoiceId);
   }
 
   @Post()

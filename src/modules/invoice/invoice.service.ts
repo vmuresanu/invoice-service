@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Inject } from '@nestjs/common';
 import { Repository, DeleteResult } from 'typeorm';
 import { Invoice } from './entity/invoice.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,6 +13,7 @@ import { PaginationOptions } from '../../infrastucture/pagination/pagination-opt
 import { InvoiceRepository } from './invoice.repository';
 import { map, difference } from 'lodash';
 import { BulkDeleteResponse } from '../../shared/model/bulk-delete.response';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class InvoiceService {
@@ -20,7 +21,8 @@ export class InvoiceService {
     @InjectRepository(Invoice)
     private readonly invoiceRepository: InvoiceRepository,
     @InjectRepository(InvoiceStatus)
-    private readonly invoiceStatusRepository: Repository<InvoiceStatus>) {
+    private readonly invoiceStatusRepository: Repository<InvoiceStatus>,
+    @Inject('ORDER_SERVICE') private orderService: ClientProxy) {
   }
 
   async getInvoices(options: PaginationOptions): Promise<Paginator<InvoiceResponse[]>> {
@@ -45,6 +47,14 @@ export class InvoiceService {
         }
         return plainToClass(InvoiceResponse, invoice)
       })
+  }
+
+  async getData(invoiceId: string): Promise<any> {
+    const pattern = { cmd: 'getOrders' };
+    // TODO: get orders by id
+    const result = await this.orderService.send<any>(pattern, '')
+    console.log(result)
+    return result;
   }
 
   async create(invoiceRequest: InvoiceRequest): Promise<InvoiceResponse> {
