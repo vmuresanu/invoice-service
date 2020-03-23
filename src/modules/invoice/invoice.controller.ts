@@ -1,10 +1,11 @@
 import { Body, Controller, Get, Param, Post, Put, Query, UseGuards, UsePipes, Delete } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
-import { ValidationPipe } from '../../infrastucture/validation.pipe';
+
 import { InvoiceRequest } from './entity/invoice.request';
 import { AuthGuard } from '@nestjs/passport';
 import { InvoiceResponse } from './entity/invoice.response';
 import { Paginator } from '../../infrastucture/pagination/paginator.interface';
+import { ValidationPipe } from 'core-service-vm/dist/core-service-module/pipes/validation.pipe'
 
 @Controller('invoices')
 @UseGuards(AuthGuard('jwt'))
@@ -32,13 +33,13 @@ export class InvoiceController {
   }
 
   @Post()
-  @UsePipes(new ValidationPipe())
+  @UsePipes(ValidationPipe)
   async createInvoice(@Body() invoiceRequest: InvoiceRequest) {
     return await this.invoiceService.create(invoiceRequest);
   }
 
   @Put(':id')
-  @UsePipes(new ValidationPipe())
+  @UsePipes(ValidationPipe)
   async updateInvoice(@Param('id') id: string, @Body() invoiceRequest: Partial<InvoiceRequest>) {
     return this.invoiceService.update(id, invoiceRequest);
   }
