@@ -3,16 +3,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { InvoiceModule } from './modules/invoice/invoice.module';
-import { Invoice } from './modules/invoice/entity/invoice.entity';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { HttpErrorFilter } from './infrastucture/http-error.filter';
-import { LoggingInterceptor } from './infrastucture/logging.interceptor';
 import { UserModule } from './modules/user/user.module';
-import { User } from './modules/user/entity/user.entity';
 import { AuthModule } from './infrastucture/auth/auth.module';
-import { InvoiceStatus } from './modules/invoice-status/entity/invoice-status.entity';
 import { getMetadataArgsStorage } from 'typeorm';
 import { typeOrmConfig } from './config/typeorm.config';
+import { HttpErrorFilter } from 'core-service-vm/dist/core-service-module/util/http-error.filter';
+import { LoggingInterceptor } from 'core-service-vm/dist/core-service-module/util/logging.interceptor';
 
 @Module({
   imports: [

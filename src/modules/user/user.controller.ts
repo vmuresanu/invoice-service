@@ -1,8 +1,7 @@
 import { Body, Controller, Get, Post, UsePipes } from '@nestjs/common';
-import { InvoiceService } from '../invoice/invoice.service';
 import { UserService } from './user.service';
 import { UserRequest } from './entity/user.request';
-import { ValidationPipe } from '../../infrastucture/validation.pipe';
+import { ValidationPipe } from 'core-service-vm/dist/core-service-module/pipes/validation.pipe';
 
 @Controller('user')
 export class UserController {
