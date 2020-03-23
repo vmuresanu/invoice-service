@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable, Inject } from '@nestjs/common';
-import { Repository, DeleteResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Invoice } from './entity/invoice.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InvoiceResponse } from './entity/invoice.response';
@@ -49,10 +49,10 @@ export class InvoiceService {
       })
   }
 
-  async getData(invoiceId: string): Promise<any> {
-    const pattern = { cmd: 'getOrders' };
+  async getData(period: string): Promise<any> {
+    const pattern = { cmd: 'getOrdersByPeriod' };
     // TODO: get orders by id
-    const result = await this.orderService.send<any>(pattern, '')
+    const result = await this.orderService.send<any, string>(pattern, period);
     console.log(result)
     return result;
   }

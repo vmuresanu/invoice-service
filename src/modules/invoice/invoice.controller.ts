@@ -26,9 +26,9 @@ export class InvoiceController {
     return this.invoiceService.getInvoice(id);
   }
 
-  @Get('/orders')
-  async getData(@Param('invoiceId') invoiceId: string): Promise<InvoiceResponse> {
-    return this.invoiceService.getData(invoiceId);
+  @Get('orders')
+  async getData(@Query('period') period: string): Promise<InvoiceResponse> {
+    return this.invoiceService.getData(period);
   }
 
   @Post()
