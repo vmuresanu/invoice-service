@@ -1,5 +1,4 @@
 import { Exclude, Expose, Type } from 'class-transformer';
-import { InvoiceStatus } from '../../invoice-status/entity/invoice-status.entity';
 import { InvoiceStatusResponse } from '../../invoice-status/entity/invoice-status.response';
 
 export class InvoiceResponse {
