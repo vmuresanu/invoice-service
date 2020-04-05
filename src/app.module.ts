@@ -6,15 +6,16 @@ import { InvoiceModule } from './modules/invoice/invoice.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './infrastucture/auth/auth.module';
-import { getMetadataArgsStorage } from 'typeorm';
 import { typeOrmConfig } from './config/typeorm.config';
 import { HttpErrorFilter } from 'core-service-vm/dist/core-service-module/util/http-error.filter';
 import { LoggingInterceptor } from 'core-service-vm/dist/core-service-module/util/logging.interceptor';
+import { ScheduleModule } from './modules/schedule/schedule.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
     InvoiceModule,
+    ScheduleModule,
     AuthModule,
     UserModule,
   ],

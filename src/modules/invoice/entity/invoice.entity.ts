@@ -1,5 +1,6 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, Generated, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, Generated, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { InvoiceStatus } from '../../invoice-status/entity/invoice-status.entity';
+import { Schedule } from '../../schedule/entity/schedule.entity';
 
 @Entity('invoice')
 export class Invoice extends BaseEntity {
@@ -31,4 +32,7 @@ export class Invoice extends BaseEntity {
 
   @ManyToOne(type => InvoiceStatus)
   status: InvoiceStatus;
+
+  @OneToMany(type => Schedule, schedule => schedule.invoice)
+  schedules: Schedule[];
 }
