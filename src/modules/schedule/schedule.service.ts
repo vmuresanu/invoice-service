@@ -7,12 +7,17 @@ import { Paginator } from '../../infrastucture/pagination/paginator.interface';
 import { ScheduleResponse } from './entity/schedule.response';
 import { plainToClass } from 'class-transformer';
 import { constructPagination } from '../../infrastucture/pagination/pagination-function';
+import { Invoice } from '../invoice/entity/invoice.entity';
+import { InvoiceRepository } from '../invoice/invoice.repository';
+import { ScheduleRequest } from './entity/schedule.request';
 
 @Injectable()
 export class ScheduleService {
   constructor(
     @InjectRepository(Schedule)
     private readonly scheduleRepository: ScheduleRepository,
+    @InjectRepository(Invoice)
+    private readonly invoiceRepository: InvoiceRepository,
   ) { }
 
   async getSchedules(options: PaginationOptions, invoiceId?: string): Promise<Paginator<ScheduleResponse[]>> {
@@ -21,7 +26,7 @@ export class ScheduleService {
       skip: options.limit * (options.page - 1),
     };
 
-     if (invoiceId) {
+    if (invoiceId) {
       condition['where'] = { invoiceId };
     }
 
@@ -40,6 +45,20 @@ export class ScheduleService {
         if (!schedule) {
           throw new HttpException('Schedule with given id Not found', HttpStatus.NOT_FOUND);
         }
+        return plainToClass(ScheduleResponse, schedule);
+      })
+  }
+
+  async createSchedule(invoiceId: string, scheduleRequest: ScheduleRequest): Promise<ScheduleResponse> {
+    const invoice = await this.invoiceRepository.findOne({ where: { id: invoiceId } });
+    if (!invoice) {
+      throw new HttpException('Invoice with given id Not found', HttpStatus.NOT_FOUND);
+    }
+    const schedule = this.scheduleRepository.create(scheduleRequest);
+    schedule.invoiceId = invoiceId;
+    return this.scheduleRepository
+      .save(schedule)
+      .then((schedule: Schedule) => {
         return plainToClass(ScheduleResponse, schedule);
       })
   }
