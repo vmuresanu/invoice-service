@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Schedule } from './entity/schedule.entity';
 import { ScheduleRepository } from './schedule.repository';
@@ -10,7 +10,6 @@ import { constructPagination } from '../../infrastucture/pagination/pagination-f
 import { Invoice } from '../invoice/entity/invoice.entity';
 import { InvoiceRepository } from '../invoice/invoice.repository';
 import { ScheduleRequest } from './entity/schedule.request';
-import moment = require('moment');
 import { constructMomentDateTime } from '../../helpers/helpers';
 
 @Injectable()
@@ -20,7 +19,8 @@ export class ScheduleService {
     private readonly scheduleRepository: ScheduleRepository,
     @InjectRepository(Invoice)
     private readonly invoiceRepository: InvoiceRepository,
-  ) { }
+  ) {
+  }
 
   async getSchedules(options: PaginationOptions, invoiceId?: string): Promise<Paginator<ScheduleResponse[]>> {
     let condition = {
@@ -48,7 +48,7 @@ export class ScheduleService {
           throw new HttpException('Schedule with given id Not found', HttpStatus.NOT_FOUND);
         }
         return plainToClass(ScheduleResponse, schedule);
-      })
+      });
   }
 
   async createSchedule(invoiceId: string, scheduleRequest: ScheduleRequest): Promise<ScheduleResponse> {
@@ -68,7 +68,7 @@ export class ScheduleService {
   async updateSchedule(id: string, scheduleRequest: Partial<ScheduleRequest>): Promise<ScheduleResponse> {
     const schedule = await this.scheduleRepository
       .findOne({
-        where: { id }
+        where: { id },
       });
 
     if (!schedule) {
@@ -81,11 +81,11 @@ export class ScheduleService {
     if (shouldCheckDateTime) {
       const startDateTime = constructMomentDateTime(
         scheduleRequest.startDate || schedule.startDate,
-        scheduleRequest.startTime || schedule.startTime
+        scheduleRequest.startTime || schedule.startTime,
       );
       const endDateTime = constructMomentDateTime(
         scheduleRequest.endDate || schedule.endDate,
-        scheduleRequest.endTime || schedule.endTime
+        scheduleRequest.endTime || schedule.endTime,
       );
       if (startDateTime.isAfter(endDateTime)) {
         throw new HttpException('startDateTime can\'t be after endDateTime', HttpStatus.BAD_REQUEST);
@@ -94,7 +94,16 @@ export class ScheduleService {
     return this.scheduleRepository
       .save({ ...schedule, ...scheduleRequest })
       .then((schedule: Schedule) => {
-        return plainToClass(ScheduleResponse, schedule)
+        return plainToClass(ScheduleResponse, schedule);
       });
+  }
+
+  async deleteSchedule(id: string): Promise<void> {
+    const schedule = await this.scheduleRepository.findOne({ where: { id } });
+    if (!schedule) {
+      throw new HttpException('Schedule with such id doesn\'t exist', HttpStatus.NOT_FOUND);
+    }
+
+    await this.scheduleRepository.delete({ id });
   }
 }

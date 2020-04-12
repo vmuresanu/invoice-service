@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Param, Post, Body, ValidationPipe, UsePipes, Put } from '@nestjs/common';
+import { Controller, Get, Query, Param, Post, Body, ValidationPipe, UsePipes, Put, Delete } from '@nestjs/common';
 import { ScheduleService } from './schedule.service';
 import { Paginator } from '../../infrastucture/pagination/paginator.interface';
 import { ScheduleResponse } from './entity/schedule.response';
@@ -34,6 +34,11 @@ export class ScheduleController {
   @UsePipes(ValidationPipe)
   async updateSchedule(@Param('id') id, @Body() scheduleRequest: Partial<ScheduleRequest>): Promise<ScheduleResponse> {
     return this.scheduleService.updateSchedule(id, scheduleRequest);
+  }
+
+  @Delete(':id')
+  async deleteSchedule(@Param('id') id): Promise<void> {
+    return this.scheduleService.deleteSchedule(id);
   }
 
 }

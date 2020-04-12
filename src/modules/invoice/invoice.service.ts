@@ -89,7 +89,7 @@ export class InvoiceService {
     if (!invoice) {
       throw new HttpException('Invoice with such id doesn\'t exist', HttpStatus.NOT_FOUND);
     }
-    this.invoiceRepository.delete({ uuid: id });
+    await this.invoiceRepository.delete({ uuid: id });
   }
 
   async deleteInvoices(ids: string[]): Promise<BulkDeleteResponse> {
@@ -101,7 +101,7 @@ export class InvoiceService {
     const unprocessedIds = difference(ids, deletedIds);
     deletedIds.forEach(id => {
       this.invoiceRepository.delete({ uuid: id })
-    })
+    });
     return { deletedIds, unprocessedIds }
   }
 
