@@ -10,6 +10,8 @@ import { constructPagination } from '../../infrastucture/pagination/pagination-f
 import { Invoice } from '../invoice/entity/invoice.entity';
 import { InvoiceRepository } from '../invoice/invoice.repository';
 import { ScheduleRequest } from './entity/schedule.request';
+import moment = require('moment');
+import { constructMomentDateTime } from '../../helpers/helpers';
 
 @Injectable()
 export class ScheduleService {
@@ -60,6 +62,39 @@ export class ScheduleService {
       .save(schedule)
       .then((schedule: Schedule) => {
         return plainToClass(ScheduleResponse, schedule);
-      })
+      });
+  }
+
+  async updateSchedule(id: string, scheduleRequest: Partial<ScheduleRequest>): Promise<ScheduleResponse> {
+    const schedule = await this.scheduleRepository
+      .findOne({
+        where: { id }
+      });
+
+    if (!schedule) {
+      throw new HttpException('Schedule with such id doesn\'t exist', HttpStatus.NOT_FOUND);
+    }
+
+    // Determine whether startDate and endDate are both present
+    const shouldCheckDateTime = !!((scheduleRequest.startDate || schedule.startDate) && (scheduleRequest.endDate || schedule.endDate));
+
+    if (shouldCheckDateTime) {
+      const startDateTime = constructMomentDateTime(
+        scheduleRequest.startDate || schedule.startDate,
+        scheduleRequest.startTime || schedule.startTime
+      );
+      const endDateTime = constructMomentDateTime(
+        scheduleRequest.endDate || schedule.endDate,
+        scheduleRequest.endTime || schedule.endTime
+      );
+      if (startDateTime.isAfter(endDateTime)) {
+        throw new HttpException('startDateTime can\'t be after endDateTime', HttpStatus.BAD_REQUEST);
+      }
+    }
+    return this.scheduleRepository
+      .save({ ...schedule, ...scheduleRequest })
+      .then((schedule: Schedule) => {
+        return plainToClass(ScheduleResponse, schedule)
+      });
   }
 }
