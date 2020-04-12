@@ -32,6 +32,6 @@ export class Schedule {
   invoiceId: string;
 
   @ManyToOne(type => Invoice, invoice => invoice.schedules)
-  @JoinColumn({ name: 'invoice_id' })
+  @JoinColumn({ name: 'invoice_id', referencedColumnName: "id" })
   invoice: Invoice;
 }
