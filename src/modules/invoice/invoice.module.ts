@@ -5,12 +5,14 @@ import { InvoiceService } from './invoice.service';
 import { InvoiceRepository } from './invoice.repository';
 import { InvoiceStatusRepository } from '../invoice-status/invoice-status.repository';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ScheduleRepository } from '../schedule/schedule.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       InvoiceRepository,
-      InvoiceStatusRepository
+      InvoiceStatusRepository,
+      ScheduleRepository
     ]),
     ClientsModule.register([
       { 

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Inject } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Invoice } from './entity/invoice.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,15 +11,19 @@ import { Paginator } from '../../infrastucture/pagination/paginator.interface';
 import { constructPagination } from '../../infrastucture/pagination/pagination-function';
 import { PaginationOptions } from '../../infrastucture/pagination/pagination-options.interface';
 import { InvoiceRepository } from './invoice.repository';
-import { map, difference } from 'lodash';
+import { difference, map } from 'lodash';
 import { BulkDeleteResponse } from '../../shared/model/bulk-delete.response';
 import { ClientProxy } from '@nestjs/microservices';
+import { Schedule } from '../schedule/entity/schedule.entity';
+import { ScheduleRepository } from '../schedule/schedule.repository';
 
 @Injectable()
 export class InvoiceService {
   constructor(
     @InjectRepository(Invoice)
     private readonly invoiceRepository: InvoiceRepository,
+    @InjectRepository(Schedule)
+    private readonly scheduleRepository: ScheduleRepository,
     @InjectRepository(InvoiceStatus)
     private readonly invoiceStatusRepository: Repository<InvoiceStatus>,
     @Inject('ORDER_SERVICE') private orderService: ClientProxy) {
@@ -40,20 +44,20 @@ export class InvoiceService {
 
   async getInvoice(id: string): Promise<InvoiceResponse> {
     return await this.invoiceRepository
-      .findOne({ where: { uuid: id }, relations: ['status'] })
+      .findOne({ where: { id }, relations: ['status'] })
       .then((invoice: Invoice) => {
         if (!invoice) {
           throw new HttpException('Invoice with given id Not found', HttpStatus.NOT_FOUND);
         }
-        return plainToClass(InvoiceResponse, invoice)
-      })
+        return plainToClass(InvoiceResponse, invoice);
+      });
   }
 
   async getData(period: string): Promise<any> {
     const pattern = { cmd: 'getOrdersByPeriod' };
     // TODO: get orders by id
     const result = await this.orderService.send<any, string>(pattern, period);
-    console.log(result)
+    console.log(result);
     return result;
   }
 
@@ -64,45 +68,53 @@ export class InvoiceService {
     return this.invoiceRepository
       .save(invoice)
       .then((invoice: Invoice) => {
-        return plainToClass(InvoiceResponse, invoice)
+        return plainToClass(InvoiceResponse, invoice);
       });
   }
 
   async update(id: string, invoiceRequest: Partial<InvoiceRequest>): Promise<InvoiceResponse> {
     const invoice = await this.invoiceRepository
-    .findOne({
-      where: { uuid: id },
-      relations: ['status'] 
-    });
+      .findOne({
+        where: { id },
+        relations: ['status'],
+      });
     if (!invoice) {
       throw new HttpException('Invoice with such id doesn\'t exist', HttpStatus.NOT_FOUND);
     }
     return this.invoiceRepository
       .save({ ...invoice, ...invoiceRequest })
       .then((invoice: Invoice) => {
-        return plainToClass(InvoiceResponse, invoice)
-      }) ;
+        return plainToClass(InvoiceResponse, invoice);
+      });
   }
 
   async delete(id: string): Promise<void> {
-    const invoice = await this.invoiceRepository.findOne({ where: { uuid: id } });
+    const invoice = await this.invoiceRepository.findOne({ where: { id } });
     if (!invoice) {
       throw new HttpException('Invoice with such id doesn\'t exist', HttpStatus.NOT_FOUND);
     }
-    await this.invoiceRepository.delete({ uuid: id });
+    let schedules = await this.scheduleRepository.find({ where: { invoiceId: id } });
+    schedules?.forEach(sch => {
+      this.scheduleRepository.delete({ id: sch.id });
+    });
+    await this.invoiceRepository.delete({ id });
   }
 
   async deleteInvoices(ids: string[]): Promise<BulkDeleteResponse> {
-    const invoices = await this.invoiceRepository.findByUUIDs(ids);
+    const invoices = await this.invoiceRepository.findByIds(ids);
     if (!invoices.length) {
       throw new HttpException('Invoices with such ids doesn\'t exist', HttpStatus.NOT_FOUND);
     }
-    const deletedIds: string[] = map(invoices, 'uuid');
+    const deletedIds: string[] = map(invoices, 'id');
     const unprocessedIds = difference(ids, deletedIds);
-    deletedIds.forEach(id => {
-      this.invoiceRepository.delete({ uuid: id })
+    deletedIds.map(async (id) => {
+      let schedules = await this.scheduleRepository.find({ where: { invoiceId: id } });
+      schedules?.forEach(sch => {
+        this.scheduleRepository.delete({ id: sch.id });
+      });
+      await this.invoiceRepository.delete({ id });
     });
-    return { deletedIds, unprocessedIds }
+    return { deletedIds, unprocessedIds };
   }
 
 }
