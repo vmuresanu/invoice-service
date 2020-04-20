@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Query, UseGuards, UsePipes, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, UseGuards, UsePipes, Delete, Patch } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
 
 import { InvoiceRequest } from './entity/invoice.request';
@@ -25,6 +25,11 @@ export class InvoiceController {
   @Get('find/:id')
   async getInvoice(@Param('id') id: string): Promise<InvoiceResponse> {
     return this.invoiceService.getInvoice(id);
+  }
+
+  @Patch('move-to-new/:id')
+  async moveToNew(@Param('id') id: string): Promise<InvoiceResponse> {
+    return this.invoiceService.moveToNew(id);
   }
 
   @Get('orders')
