@@ -62,7 +62,7 @@ export class InvoiceService {
   }
 
   async create(invoiceRequest: InvoiceRequest): Promise<InvoiceResponse> {
-    const st = await this.invoiceStatusRepository.findOne({ where: { code: CodeEnum.NEW } });
+    const st = await this.invoiceStatusRepository.findOne({ where: { code: CodeEnum.DRAFT } });
     const invoice = this.invoiceRepository.create(invoiceRequest);
     invoice.status = st;
     return this.invoiceRepository
@@ -115,6 +115,27 @@ export class InvoiceService {
       await this.invoiceRepository.delete({ id });
     });
     return { deletedIds, unprocessedIds };
+  }
+
+  async moveToNew(id): Promise<InvoiceResponse> {
+    const invoice: Invoice = await this.invoiceRepository.findOne({
+      where: { id },
+      relations: ['status'],
+    });
+    if (!invoice) {
+      throw new HttpException('Invoice with such id doesn\'t exist', HttpStatus.NOT_FOUND);
+    }
+
+    if (invoice.status.code !== CodeEnum.DRAFT) {
+      throw new HttpException('Invoice is not is status Draft', HttpStatus.BAD_REQUEST);
+    }
+
+    invoice.status = await this.invoiceStatusRepository.findOne({ where: { code: CodeEnum.NEW } });
+    return this.invoiceRepository
+      .save(invoice)
+      .then((invoice: Invoice) => {
+        return plainToClass(InvoiceResponse, invoice);
+      });
   }
 
 }

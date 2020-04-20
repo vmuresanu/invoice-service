@@ -8,7 +8,7 @@ export class InvoiceStatus extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Enum(type => CodeEnum, { default: CodeEnum.NEW })
+  @Enum(type => CodeEnum, { default: CodeEnum.DRAFT })
   code: CodeEnum;
 
   @Column('text')
