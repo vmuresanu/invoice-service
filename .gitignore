@@ -15,6 +15,7 @@ lerna-debug.log*
 
 # Tests
 /coverage
+/coverage-e2e/
 /.nyc_output
 
 # IDEs and editors
@@ -25,7 +26,6 @@ lerna-debug.log*
 *.launch
 .settings/
 *.sublime-workspace
-*/coverage/
 
 # IDE - VSCode
 .vscode/*

@@ -16,6 +16,7 @@ import { BulkDeleteResponse } from '../../shared/model/bulk-delete.response';
 import { ClientProxy } from '@nestjs/microservices';
 import { Schedule } from '../schedule/entity/schedule.entity';
 import { ScheduleRepository } from '../schedule/schedule.repository';
+import { InvoiceNotFoundException, InvoiceStatusNotDraftException } from './exceptions/exceptions';
 
 @Injectable()
 export class InvoiceService {
@@ -47,7 +48,7 @@ export class InvoiceService {
       .findOne({ where: { id }, relations: ['status'] })
       .then((invoice: Invoice) => {
         if (!invoice) {
-          throw new HttpException('Invoice with given id Not found', HttpStatus.NOT_FOUND);
+          throw new InvoiceNotFoundException();
         }
         return plainToClass(InvoiceResponse, invoice);
       });
@@ -79,7 +80,7 @@ export class InvoiceService {
         relations: ['status'],
       });
     if (!invoice) {
-      throw new HttpException('Invoice with such id doesn\'t exist', HttpStatus.NOT_FOUND);
+      throw new InvoiceNotFoundException();
     }
     return this.invoiceRepository
       .save({ ...invoice, ...invoiceRequest })
@@ -91,7 +92,7 @@ export class InvoiceService {
   async delete(id: string): Promise<void> {
     const invoice = await this.invoiceRepository.findOne({ where: { id } });
     if (!invoice) {
-      throw new HttpException('Invoice with such id doesn\'t exist', HttpStatus.NOT_FOUND);
+      throw new InvoiceNotFoundException();
     }
     let schedules = await this.scheduleRepository.find({ where: { invoiceId: id } });
     schedules?.forEach(sch => {
@@ -103,7 +104,7 @@ export class InvoiceService {
   async deleteInvoices(ids: string[]): Promise<BulkDeleteResponse> {
     const invoices = await this.invoiceRepository.findByIds(ids);
     if (!invoices.length) {
-      throw new HttpException('Invoices with such ids doesn\'t exist', HttpStatus.NOT_FOUND);
+      throw new InvoiceNotFoundException();
     }
     const deletedIds: string[] = map(invoices, 'id');
     const unprocessedIds = difference(ids, deletedIds);
@@ -123,11 +124,11 @@ export class InvoiceService {
       relations: ['status'],
     });
     if (!invoice) {
-      throw new HttpException('Invoice with such id doesn\'t exist', HttpStatus.NOT_FOUND);
+      throw new InvoiceNotFoundException();
     }
 
     if (invoice.status.code !== CodeEnum.DRAFT) {
-      throw new HttpException('Invoice is not is status Draft', HttpStatus.BAD_REQUEST);
+      throw new InvoiceStatusNotDraftException();
     }
 
     invoice.status = await this.invoiceStatusRepository.findOne({ where: { code: CodeEnum.NEW } });
