@@ -18,8 +18,9 @@ export class InvoiceController {
   async getInvoices(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 50,
+    @Query('sort') sort?: string,
   ): Promise<Paginator<InvoiceResponse[]>> {
-    return this.invoiceService.getInvoices({ page, limit });
+    return this.invoiceService.getInvoices({ page, limit, sort });
   }
 
   @Get('find/:id')
