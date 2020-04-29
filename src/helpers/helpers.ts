@@ -1,6 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcryptjs';
 import moment = require('moment');
+import { InvalidSortingParameterException } from '../shared/exceptions/exceptions';
 
 export async function comparePassword(attempt, password) {
   return await bcrypt.compare(attempt, password);
@@ -28,7 +29,12 @@ export function handleSorting(sortExpression: string) {
   let orderOptions = {};
   let criterion = sortExpression.split(',');
   criterion.forEach(criteria => {
+    let parameter = criteria.charAt(0);
     let key = criteria.substring(1);
+    // ' ' - because '+' is transformed into ' '
+    if (parameter !== ' ' && parameter !== '-') {
+      throw new InvalidSortingParameterException();
+    }
     let value = criteria[0] === '-' ? -1 : 1;
     orderOptions[key] = value;
   });
