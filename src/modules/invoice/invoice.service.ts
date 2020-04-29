@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Invoice } from './entity/invoice.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,6 +17,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Schedule } from '../schedule/entity/schedule.entity';
 import { ScheduleRepository } from '../schedule/schedule.repository';
 import { InvoiceNotFoundException, InvoiceStatusNotDraftException } from './exceptions/exceptions';
+import { handleSorting } from '../../helpers/helpers';
 
 @Injectable()
 export class InvoiceService {
@@ -31,10 +32,18 @@ export class InvoiceService {
   }
 
   async getInvoices(options: PaginationOptions): Promise<Paginator<InvoiceResponse[]>> {
+    const sortExpression = options?.sort;
+    let orderOptions = {};
+
+    if (sortExpression) {
+      orderOptions = handleSorting(sortExpression);
+    }
+
     return this.invoiceRepository
       .findAndCount({
         take: options.limit,
         skip: options.limit * (options.page - 1),
+        order: orderOptions,
         relations: ['status'],
       })
       .then(([invoices, totalItems]) => {
