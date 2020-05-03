@@ -52,13 +52,33 @@ $ npm run start:prod
 ```bash
 # unit tests
 $ npm run test
+$ npm run test:cov - to have coverage report
 
 # e2e tests
 $ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+$ npm run test:e2e:cov - to have coverage report
 ```
+
+## Debug
+1. Debug in run mode (For WebStorm)
+    * Edit Configurations
+    * Add a new configuration - Node.js
+   
+    <img src="https://i.ibb.co/GpRnksc/Debug.jpg" width="680" alt="Nest Logo" />
+    
+    * Set up breakpoints
+    * Launch debug button
+    
+2. Debug in tests: 
+    * Place breakpoint in either tests or in source files (or both)
+    * Right click on test and debug
+    * Wait for app to launch
+    
+    <img src="https://i.ibb.co/FH1KHKZ/Debug2.jpg" />
+    
+    * For integration tests create jest-e2e.json, configure, and follow the same steps
+    
+    
 
 ## Support
 
