@@ -26,16 +26,16 @@ export function constructMomentDateTime(date, time) {
 
 // Note that http://localhost:4000/invoices?sort=+title, plus sign in URL is empty space
 export function handleSorting(sortExpression: string) {
-  let orderOptions = {};
-  let criterion = sortExpression.split(',');
+  const orderOptions = {};
+  const criterion = sortExpression.split(',');
   criterion.forEach(criteria => {
-    let parameter = criteria.charAt(0);
-    let key = criteria.substring(1);
+    const parameter = criteria.charAt(0);
+    const key = criteria.substring(1);
     // ' ' - because '+' is transformed into ' '
     if (parameter !== ' ' && parameter !== '-') {
       throw new InvalidSortingParameterException();
     }
-    let value = criteria[0] === '-' ? -1 : 1;
+    const value = criteria.startsWith('-') ? -1 : 1;
     orderOptions[key] = value;
   });
   return orderOptions

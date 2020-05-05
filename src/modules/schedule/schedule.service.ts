@@ -23,13 +23,13 @@ export class ScheduleService {
   }
 
   async getSchedules(options: PaginationOptions, invoiceId?: string): Promise<Paginator<ScheduleResponse[]>> {
-    let condition = {
+    const condition = {
       take: options.limit,
       skip: options.limit * (options.page - 1),
     };
 
     if (invoiceId) {
-      condition['where'] = { invoiceId };
+      condition.where = { invoiceId };
     }
 
     return this.scheduleRepository

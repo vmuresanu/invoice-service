@@ -1,4 +1,4 @@
-export interface BulkDeleteResponse {   
-    deletedIds: string[],
-    unprocessedIds: string[]
+export interface BulkDeleteResponse {
+    deletedIds: string[];
+    unprocessedIds: string[];
 }

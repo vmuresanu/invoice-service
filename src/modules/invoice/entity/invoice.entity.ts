@@ -9,7 +9,7 @@ export class Invoice extends BaseEntity {
   id: string;
 
   @Column('text')
-  @Generated("uuid")
+  @Generated('uuid')
   uuid: string;
 
   @CreateDateColumn()

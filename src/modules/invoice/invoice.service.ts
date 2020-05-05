@@ -103,7 +103,7 @@ export class InvoiceService {
     if (!invoice) {
       throw new InvoiceNotFoundException();
     }
-    let schedules = await this.scheduleRepository.find({ where: { invoiceId: id } });
+    const schedules = await this.scheduleRepository.find({ where: { invoiceId: id } });
     schedules?.forEach(sch => {
       this.scheduleRepository.delete({ id: sch.id });
     });
@@ -118,7 +118,7 @@ export class InvoiceService {
     const deletedIds: string[] = map(invoices, 'id');
     const unprocessedIds = difference(ids, deletedIds);
     deletedIds.map(async (id) => {
-      let schedules = await this.scheduleRepository.find({ where: { invoiceId: id } });
+      const schedules = await this.scheduleRepository.find({ where: { invoiceId: id } });
       schedules?.forEach(sch => {
         this.scheduleRepository.delete({ id: sch.id });
       });

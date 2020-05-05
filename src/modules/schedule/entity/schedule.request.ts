@@ -1,5 +1,5 @@
-import { IsNumber, IsISO8601, Validate, IsString } from "class-validator";
-import { IsBeforeConstraint, IsBeforeTimeIfDateConstraint, IsSameOrBeforeConstraint } from "../../../shared/constraints/date-is-before.constraint";
+import { IsNumber, IsISO8601, Validate, IsString } from 'class-validator';
+import { IsBeforeConstraint, IsBeforeTimeIfDateConstraint, IsSameOrBeforeConstraint } from '../../../shared/constraints/date-is-before.constraint';
 
 export class ScheduleRequest {
   @IsNumber()

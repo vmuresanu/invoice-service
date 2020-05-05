@@ -12,9 +12,9 @@ import { ValidationPipe } from 'core-service-vm/dist';
 
 describe('InvoiceController (e2e)', () => {
   let app;
-  let invoiceRepository = createInvoiceRepositoryMock;
-  let invoiceStatusRepository = createInvoiceStatusRepositoryMock;
-  let scheduleRepository = {};
+  const invoiceRepository = createInvoiceRepositoryMock;
+  const invoiceStatusRepository = createInvoiceStatusRepositoryMock;
+  const scheduleRepository = {};
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({

@@ -15,9 +15,9 @@ import { ScheduleRepository } from '../schedule/schedule.repository';
       ScheduleRepository
     ]),
     ClientsModule.register([
-      { 
-        name: 'ORDER_SERVICE', 
-        transport: Transport.TCP, 
+      {
+        name: 'ORDER_SERVICE',
+        transport: Transport.TCP,
         options: { host: '127.0.0.1', port: 3001 }
       },
     ])

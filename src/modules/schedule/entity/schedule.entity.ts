@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Invoice } from "../../invoice/entity/invoice.entity";
+import { Invoice } from '../../invoice/entity/invoice.entity';
 
 @Entity('schedule')
 export class Schedule {
@@ -28,10 +28,10 @@ export class Schedule {
   @Column('varchar', { name: 'days_of_week', length: '7' })
   daysOfWeek: string;
 
-  @Column("varchar", { name: 'invoice_id', nullable: true })
+  @Column('varchar', { name: 'invoice_id', nullable: true })
   invoiceId: string;
 
   @ManyToOne(type => Invoice, invoice => invoice.schedules)
-  @JoinColumn({ name: 'invoice_id', referencedColumnName: "id" })
+  @JoinColumn({ name: 'invoice_id', referencedColumnName: 'id' })
   invoice: Invoice;
 }

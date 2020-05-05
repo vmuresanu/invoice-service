@@ -5,7 +5,7 @@ import { Invoice } from './entity/invoice.entity';
 export class InvoiceRepository extends Repository<Invoice> {
   async findByUUIDs(ids: string[]): Promise<Invoice[]> {
     return await this.manager.createQueryBuilder(Invoice, 'invoice')
-      .where(`invoice.uuid IN (:...ids)`, { ids })
+      .where('invoice.uuid IN (:...ids)', { ids })
       .getMany();
   }
 }

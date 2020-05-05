@@ -7,17 +7,17 @@ import { invoiceRequestMock } from '../mocks/invoice-request.mock';
 import { createInvoiceMock, createInvoicesMock, createInvoiceStatusMock } from '../mocks/invoice-entity.mock';
 
 describe('InvoiceService', () => {
-  let invoiceRepository = createInvoiceRepositoryMock as any;
-  let scheduleRepository = {
+  const invoiceRepository = createInvoiceRepositoryMock as any;
+  const scheduleRepository = {
     find: () => ([{ id: '1', rate: 2 }]),
     delete: jest.fn(),
   } as any;
-  let invoiceStatusRepository = createInvoiceStatusRepositoryMock as any;
-  let orderService = {} as any;
+  const invoiceStatusRepository = createInvoiceStatusRepositoryMock as any;
+  const orderService = {} as any;
   let service: InvoiceService;
 
   beforeEach(async () => {
-    //jest.resetAllMocks();
+    // jest.resetAllMocks();
     service = new InvoiceService(invoiceRepository, scheduleRepository, invoiceStatusRepository, orderService);
   });
 
@@ -26,7 +26,7 @@ describe('InvoiceService', () => {
     jest.spyOn(invoiceRepository, 'findAndCount').mockReturnValueOnce(Promise.resolve([createInvoicesMock, 12]));
 
     // Act
-    let response = service.getInvoices({ page: 1, limit: 10 });
+    const response = service.getInvoices({ page: 1, limit: 10 });
 
     // Assert
     await expect(response).resolves.toEqual(getInvoicesExpectedMock);
@@ -38,7 +38,7 @@ describe('InvoiceService', () => {
       jest.spyOn(invoiceRepository, 'findOne').mockReturnValueOnce(Promise.resolve(createInvoiceMock));
 
       // Act
-      let response = service.getInvoice('someId');
+      const response = service.getInvoice('someId');
 
       // Assert
       await expect(response).resolves.toEqual(getInvoiceResponseMock);
@@ -49,7 +49,7 @@ describe('InvoiceService', () => {
       jest.spyOn(invoiceRepository, 'findOne').mockReturnValueOnce(Promise.resolve(undefined));
 
       // Act
-      let response = service.getInvoice('someId');
+      const response = service.getInvoice('someId');
 
       // Assert
       await expect(response).rejects.toEqual(new InvoiceNotFoundException());
@@ -63,7 +63,7 @@ describe('InvoiceService', () => {
     jest.spyOn(invoiceRepository, 'save').mockReturnValueOnce(Promise.resolve(createInvoiceMock));
 
     // Act
-    let response = service.create(invoiceRequestMock);
+    const response = service.create(invoiceRequestMock);
 
     // Assert
     await expect(response).resolves.toEqual(getInvoiceResponseMock);
@@ -77,7 +77,7 @@ describe('InvoiceService', () => {
       jest.spyOn(invoiceRepository, 'save').mockReturnValueOnce(Promise.resolve(createInvoiceMock));
 
       // Act
-      let response = service.update('someId', invoiceRequestMock);
+      const response = service.update('someId', invoiceRequestMock);
 
       // Assert
       await expect(response).resolves.toEqual(getInvoiceResponseMock);
@@ -89,7 +89,7 @@ describe('InvoiceService', () => {
       jest.spyOn(invoiceRepository, 'findOne').mockReturnValueOnce(Promise.resolve(undefined));
 
       // Act
-      let response = service.update('someId', {});
+      const response = service.update('someId', {});
 
       // Assert
       await expect(response).rejects.toEqual(new InvoiceNotFoundException());
@@ -137,7 +137,7 @@ describe('InvoiceService', () => {
       expect(result).toEqual({ deletedIds: ['1', '2'], unprocessedIds: [] });
     });
 
-    /*test('should throw error if invoice is not found', async () => {
+    /* test('should throw error if invoice is not found', async () => {
       // Arrange
       jest.spyOn(invoiceRepository, 'findOne').mockReturnValueOnce(Promise.resolve(undefined));
 
