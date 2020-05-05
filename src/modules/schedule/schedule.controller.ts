@@ -12,8 +12,8 @@ export class ScheduleController {
 
   @Get()
   async getSchedules(
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 50,
+    @Query('page') page = 1,
+    @Query('limit') limit = 50,
     @Query('invoiceId') invoiceId: string,
   ): Promise<Paginator<ScheduleResponse[]>> {
     return this.scheduleService.getSchedules({ page, limit }, invoiceId);

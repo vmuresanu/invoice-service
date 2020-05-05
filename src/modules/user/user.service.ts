@@ -44,8 +44,8 @@ export class UserService {
     }
     user = this.userRepository.create(userDto);
     return await this.userRepository.save(user)
-      .then(user => {
-        return plainToClass(UserResponse, user);
+      .then(response => {
+        return plainToClass(UserResponse, response);
       });
   }
 }
