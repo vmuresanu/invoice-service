@@ -11,6 +11,7 @@ import { Invoice } from '../invoice/entity/invoice.entity';
 import { InvoiceRepository } from '../invoice/invoice.repository';
 import { ScheduleRequest } from './entity/schedule.request';
 import { constructMomentDateTime } from '../../helpers/helpers';
+import { TypeormCondition } from '../../shared/model/typeorm-condition.interface';
 
 @Injectable()
 export class ScheduleService {
@@ -26,7 +27,7 @@ export class ScheduleService {
     const condition = {
       take: options.limit,
       skip: options.limit * (options.page - 1),
-    };
+    } as TypeormCondition;
 
     if (invoiceId) {
       condition.where = { invoiceId };
