@@ -1,15 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ScheduleService } from '../schedule.service';
+import { createScheduleRepositoryMock } from '../mocks/schedule-components.mock';
+import { createInvoiceRepositoryMock } from '../../invoice/mocks/invoice-components.mock';
 
 describe('ScheduleService', () => {
   let service: ScheduleService;
+  let scheduleRepository = createScheduleRepositoryMock as any;
+  let invoiceRepository = createInvoiceRepositoryMock as any;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [ScheduleService],
-    }).compile();
-
-    service = module.get<ScheduleService>(ScheduleService);
+    // jest.resetAllMocks();
+    service = new ScheduleService(scheduleRepository, invoiceRepository);
   });
 
   it('should be defined', () => {

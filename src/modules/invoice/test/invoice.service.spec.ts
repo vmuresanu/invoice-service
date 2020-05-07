@@ -1,6 +1,5 @@
 import { InvoiceService } from '../invoice.service';
 import { createInvoiceRepositoryMock, createInvoiceStatusRepositoryMock } from '../mocks/invoice-components.mock';
-import { InvoiceRequest } from '../entity/invoice.request';
 import { InvoiceNotFoundException } from '../exceptions/exceptions';
 import { getInvoiceResponseMock, getInvoicesExpectedMock } from '../mocks/invoice-response.mock';
 import { invoiceRequestMock } from '../mocks/invoice-request.mock';
@@ -17,7 +16,7 @@ describe('InvoiceService', () => {
   let service: InvoiceService;
 
   beforeEach(async () => {
-    // jest.resetAllMocks();
+    jest.resetAllMocks();
     service = new InvoiceService(invoiceRepository, scheduleRepository, invoiceStatusRepository, orderService);
   });
 
